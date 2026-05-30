@@ -1,25 +1,38 @@
 ﻿using Katalogos.Application.Interfaces;
+using Katalogos.Domain.Entities;
+using Katalogos.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Katalogos.Infrastructure.Services;
 
-// A classe DEVE ser public para o Program.cs enxergá-la
 public class ProdutoRepository : IProdutoRepository
 {
+    private readonly KatalogosDbContext _context;
+
+    // Injetamos o banco de dados de verdade aqui!
+    public ProdutoRepository(KatalogosDbContext context)
+    {
+        _context = context;
+    }
+
     public async Task<Guid> AdicionarProdutoAsync(string nome, decimal preco, string descricao)
     {
-        Console.WriteLine($"[BANCO DE DADOS] Salvando o produto {nome} no valor de R$ {preco}...");
-        return await Task.FromResult(Guid.NewGuid());
+        var novoProduto = new Produto(nome, preco, descricao);
+
+        await _context.Produtos.AddAsync(novoProduto);
+        await _context.SaveChangesAsync(); // Dá o COMMIT no PostgreSQL
+
+        Console.WriteLine($"[BANCO DE DADOS] Produto {nome} salvo com sucesso no PostgreSQL!");
+        return novoProduto.Id;
     }
 
     public async Task<IEnumerable<object>> ObterTodosAtivosAsync()
     {
-        // Simulando uma ida demorada ao banco de dados (2 segundos de lentidão)
-        await Task.Delay(2000);
+        // Faz um SELECT * FROM Produtos de forma ultra rápida
+        var produtos = await _context.Produtos
+            .AsNoTracking() // Dica de Sênior: Deixa a leitura 30% mais rápida!
+            .ToListAsync();
 
-        return new List<object>
-    {
-        new { Id = Guid.NewGuid(), Nome = "Teclado Mecânico RGB", Preco = 350.00 },
-        new { Id = Guid.NewGuid(), Nome = "Mouse Gamer Ultra", Preco = 120.00 }
-    };
+        return produtos;
     }
 }

@@ -39,7 +39,13 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
 // 3. Adicionando o nosso Full Identity
-builder.Services.AddIdentity<KatalogosUser, IdentityRole>()
+builder.Services.AddIdentity<KatalogosUser, IdentityRole>(options => { 
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+})
     .AddEntityFrameworkStores<KatalogosDbContext>()
     .AddDefaultTokenProviders();
 

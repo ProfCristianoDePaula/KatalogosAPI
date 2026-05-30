@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Katalogos.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialPostgres : Migration
+    public partial class CriacaoTabelaProdutos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,8 +31,8 @@ namespace Katalogos.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    NomeCompleto = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    DocumentoCpf = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
+                    NomeCompleto = table.Column<string>(type: "text", nullable: false),
+                    DocumentoCpf = table.Column<string>(type: "text", nullable: false),
                     DataNascimento = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EnderecoCompleto = table.Column<string>(type: "text", nullable: false),
                     DataRegistro = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -54,6 +54,22 @@ namespace Katalogos.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Produtos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Preco = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Descricao = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    UrlImagem = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produtos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -217,6 +233,9 @@ namespace Katalogos.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Produtos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
