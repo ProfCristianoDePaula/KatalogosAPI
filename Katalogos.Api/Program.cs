@@ -59,6 +59,7 @@ builder.Services.AddAuthentication(options =>
 // Injeção de Dependências
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IStorageService, CloudflareStorageService>();
 
 // Configurando o Garçom (MediatR)
 builder.Services.AddMediatR(cfg =>

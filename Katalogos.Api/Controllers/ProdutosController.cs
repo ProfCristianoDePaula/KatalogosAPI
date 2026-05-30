@@ -48,4 +48,31 @@ public class ProdutosController : ControllerBase
 
         return Ok(new { Mensagem = "Produto forjado com sucesso na Katalogos!", Id = produtoId });
     }
+    // 🔵 Upload de Imagem do Produto
+    [HttpPost("upload-imagem")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UploadImagem(IFormFile arquivo)
+    {
+        if (arquivo == null || arquivo.Length == 0)
+            return BadRequest(new { Mensagem = "Nenhum arquivo enviado." });
+
+        // Abre o fluxo de bytes do arquivo
+        using var stream = arquivo.OpenReadStream();
+
+        var command = new UploadImagemCommand
+        {
+            ArquivoStream = stream,
+            NomeArquivo = arquivo.FileName,
+            ContentType = arquivo.ContentType
+        };
+
+        // Manda pro garçom trabalhar
+        var urlImagem = await _mediator.Send(command);
+
+        return Ok(new
+        {
+            Mensagem = "Imagem enviada para a Edge Network com sucesso!",
+            Url = urlImagem
+        });
+    }
 }
