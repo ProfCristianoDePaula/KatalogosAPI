@@ -1,4 +1,6 @@
-﻿using Katalogos.Application.Commands;
+﻿using Katalogos.Api.Models;
+using Katalogos.Application.Commands;
+using Katalogos.Application.Commands.Produtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Katalogos.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class ProdutosController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -16,22 +18,34 @@ public class ProdutosController : ControllerBase
         _mediator = mediator;
     }
 
-    // 🟢 Aberto ao público (A vitrine da loja)
+    // 🟢 Aberto ao público: Qualquer pessoa pode ver a vitrine da Katalogos
     [HttpGet]
     [AllowAnonymous]
     public IActionResult GetProdutos()
     {
-        return Ok(new[] { "Notebook", "Teclado Mecânico", "Mouse Gamer" });
+        // Por enquanto retornamos dados falsos. No Módulo 5 vamos ligar isso no Redis!
+        return Ok(new[] {
+            new { Nome = "Teclado Mecânico", Preco = 350.00 },
+            new { Nome = "Mouse Gamer", Preco = 120.00 }
+        });
     }
 
-    // 🔴 Restrito: Apenas usuários autenticados com o Cargo (Role) de Admin
+    // 🔴 Restrito: Só o Admin com a Pulseira VIP (Token JWT) pode forjar um produto novo
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CriarProduto([FromBody] CriarProdutoCommand command)
+    public async Task<IActionResult> CriarProduto([FromBody] CriarProdutoRequest request)
     {
-        // O MediatR manda o pedido para a "Cozinha" (Handler) que criamos no Módulo 1
+        // 1. Traduz da Web (Request) para o Negócio (Command)
+        var command = new CriarProdutoCommand
+        {
+            Nome = request.Nome,
+            Preco = request.Preco,
+            Descricao = request.Descricao
+        };
+
+        // 2. Manda pro garçom (MediatR) levar lá pra camada de Aplicação
         var produtoId = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(GetProdutos), new { id = produtoId }, command);
+        return Ok(new { Mensagem = "Produto forjado com sucesso na Katalogos!", Id = produtoId });
     }
 }
