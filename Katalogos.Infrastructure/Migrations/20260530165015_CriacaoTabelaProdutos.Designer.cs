@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Katalogos.Infrastructure.Migrations
 {
     [DbContext(typeof(KatalogosDbContext))]
-    [Migration("20260530134224_CriacaoTabelaProdutos")]
+    [Migration("20260530165015_CriacaoTabelaProdutos")]
     partial class CriacaoTabelaProdutos
     {
         /// <inheritdoc />
