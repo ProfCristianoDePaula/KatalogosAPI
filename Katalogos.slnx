@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Katalogos.Api/Katalogos.Api.csproj" />
+  <Project Path="Katalogos.Application/Katalogos.Application.csproj" />
+  <Project Path="Katalogos.Domain/Katalogos.Domain.csproj" />
+  <Project Path="Katalogos.Infrastructure/Katalogos.Infrastructure.csproj" />
+</Solution>
