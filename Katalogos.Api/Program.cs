@@ -19,9 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Adicionando suporte aos Controllers
 builder.Services.AddControllers();
 
-// 2. Conectando nosso Banco de Dados
+//// 2. Conectando nosso Banco de Dados
+//builder.Services.AddDbContext<KatalogosDbContext>(options =>
+//    options.UseInMemoryDatabase("KatalogosDbLocal"));
+
+// 2. Conectando nosso Banco de Dados de VERDADE (PostgreSQL no Docker)
+var stringDeConexao = "Host=localhost;Port=5432;Database=katalogos_db;Username=admin;Password=rootpassword123";
+
 builder.Services.AddDbContext<KatalogosDbContext>(options =>
-    options.UseInMemoryDatabase("KatalogosDbLocal"));
+    options.UseNpgsql(stringDeConexao));
 
 // 3. Adicionando o nosso Full Identity
 builder.Services.AddIdentity<KatalogosUser, IdentityRole>()

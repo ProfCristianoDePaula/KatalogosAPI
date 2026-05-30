@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 1. Nosso Banco de Dados Relacional
+  katalogos-db:
+    image: postgres:16-alpine
+    container_name: postgres_katalogos
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: rootpassword123
+      POSTGRES_DB: katalogos_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data # O "Pendrive" para não perder os dados
+
+  # 2. Interface visual para o Banco de Dados (Opcional, mas ótimo para a aula)
+  katalogos-pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_katalogos
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@katalogos.com
+      PGADMIN_DEFAULT_PASSWORD: rootpassword123
+    ports:
+      - "5050:80"
+    depends_on:
+      - katalogos-db
+
+  # 3. Nosso Cache Distribuído (Para o Módulo 5)
+  katalogos-redis:
+    image: redis:7-alpine
+    container_name: redis_katalogos
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata: # Declaração do volume do banco
