@@ -1,6 +1,7 @@
 ﻿using Katalogos.Api.Models;
 using Katalogos.Application.Commands;
 using Katalogos.Application.Commands.Produtos;
+using Katalogos.Application.Queries.Produtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,12 @@ public class ProdutosController : ControllerBase
     // 🟢 Aberto ao público: Qualquer pessoa pode ver a vitrine da Katalogos
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult GetProdutos()
+    public async Task<IActionResult> GetProdutos()
     {
-        // Por enquanto retornamos dados falsos. No Módulo 5 vamos ligar isso no Redis!
-        return Ok(new[] {
-            new { Nome = "Teclado Mecânico", Preco = 350.00 },
-            new { Nome = "Mouse Gamer", Preco = 120.00 }
-        });
+        var query = new ObterProdutosVitrineQuery();
+        var vitrine = await _mediator.Send(query);
+
+        return Ok(vitrine);
     }
 
     // 🔴 Restrito: Só o Admin com a Pulseira VIP (Token JWT) pode forjar um produto novo

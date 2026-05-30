@@ -29,6 +29,15 @@ var stringDeConexao = "Host=localhost;Port=5432;Database=katalogos_db;Username=a
 builder.Services.AddDbContext<KatalogosDbContext>(options =>
     options.UseNpgsql(stringDeConexao));
 
+// Configurando o Redis (A porta 6379 é a que mapeamos no nosso docker-compose!)
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+});
+
+// Assinando a carteira de trabalho do Cache
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
+
 // 3. Adicionando o nosso Full Identity
 builder.Services.AddIdentity<KatalogosUser, IdentityRole>()
     .AddEntityFrameworkStores<KatalogosDbContext>()
